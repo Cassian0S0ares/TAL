@@ -89,3 +89,16 @@ A versão 1 só suporta xadrez padrão e foi projetada para revisão de partidas
 Conectar o relatório JSON ao LLM local via llama.cpp, construir dataset de interpretação técnica e personalidade do TAL, validar as explicações contra as linhas da engine e comparar o modelo-base com QLoRA. Para publicar o projeto, revise as licenças GPL das dependências `chess` e Stockfish e as condições da API do Chess.com. O binário do Stockfish não é distribuído neste ZIP.
 
 Referências: https://support.chess.com/en/articles/9650547-what-is-the-pubapi-and-how-do-i-use-it ; https://python-chess.readthedocs.io/en/stable/engine.html ; https://stockfishchess.org/download/
+
+## v1.1 — TAL Coach
+
+Com o llama-server em execução e o alias `tal-base`, adicione as variáveis LLM de `.env.example` ao seu `.env` existente (não sobrescreva seus dados). Recomenda-se `LLM_MAX_TOKENS=256` para o teste inicial; se houver corte, aumente moderadamente.
+
+```bash
+python -m tal doctor --only llm
+python -m tal explain --move 13 --color black
+python -m tal chat --latest
+python -m unittest discover -s tests -v
+```
+
+O comando `doctor` agora verifica também o LLM. `--report caminho.json` seleciona um relatório específico; por padrão, usa o arquivo modificado mais recentemente. No chat, `/criticos` lista os cinco lances críticos do jogador, `/lance 13 pretas` fixa um lance e pede sua explicação, `/geral` restaura a visão geral (dois lances críticos e resumo), `/sair` encerra. Cada pergunta é independente e não há histórico conversacional nesta versão. Para manter o contexto pequeno, não enviamos todos os lances ao modelo. A IA pode errar explicações mesmo quando recebe dados corretos; confira as linhas da engine. Nenhum treinamento foi realizado. Use somente após o fim da partida.
